@@ -9,4 +9,3 @@ Rscript -e "devtools::install()"
 Rscript -e "testthat::test_file(\"tests/testthat/test_input.R\", package=\"pretty.gtable\")"
 Rscript -e "testthat::test_file(\"tests/testthat/test_output.R\", package=\"pretty.gtable\")"
 Rscript -e "testthat::test_package(\"pretty.gtable\")"
-

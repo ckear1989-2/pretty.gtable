@@ -1,4 +1,3 @@
-
 library("data.table")
 
 test_that("data.frame works", {
@@ -14,5 +13,3 @@ test_that("data.table works", {
 test_that("vector doesn't work", {
   expect_error(pretty_gtable(c(1, 2, 3), NULL), "provided data should be data.frame or data.table not numeric")
 })
-
-

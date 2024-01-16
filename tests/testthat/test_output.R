@@ -1,4 +1,3 @@
-
 test_that(".jpg output works", {
   expect_silent(pretty_gtable(mtcars, NULL, "mtcars.jpg"))
   expect_silent(pretty_gtable(mtcars, NULL, "mtcars.jpeg"))
@@ -21,8 +20,8 @@ test_that("output files have been created", {
 })
 
 test_that("truncation works (with warnings)", {
-  expect_silent(pretty_gtable(mtcars, NULL, "mtcars_16.pdf", truncate=1:16))
-  expect_silent(pretty_gtable(mtcars, NULL, "mtcars_mazda.pdf", truncate=c("Mazda RX4", "Mazda RX4 Wag")))
-  expect_warning(pretty_gtable(mtcars, NULL, "mtcars_fakecar.pdf", truncate=c("fakecar1", "fakecar2")), "attempting to truncate data with incompatible indexing")
-  expect_warning(pretty_gtable(mtcars, NULL, "mtcars_1000.pdf", truncate=1:1000), "attempting to truncate data with incompatible indexing")
+  expect_silent(pretty_gtable(mtcars, NULL, "mtcars_16.pdf", truncate = 1:16))
+  expect_silent(pretty_gtable(mtcars, NULL, "mtcars_mazda.pdf", truncate = c("Mazda RX4", "Mazda RX4 Wag")))
+  expect_warning(pretty_gtable(mtcars, NULL, "mtcars_fakecar.pdf", truncate = c("fakecar1", "fakecar2")), "attempting to truncate data with incompatible indexing")
+  expect_warning(pretty_gtable(mtcars, NULL, "mtcars_1000.pdf", truncate = 1:1000), "attempting to truncate data with incompatible indexing")
 })

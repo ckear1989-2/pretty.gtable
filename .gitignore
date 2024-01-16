@@ -1,8 +1,7 @@
 
 # run code locally but don't include in git
-temp.R
-
-*.jpg
 *.jpeg
-*.png
+*.jpg
 *.pdf
+*.png
+temp.R
