@@ -25,15 +25,14 @@ set.row.border <- function(obj, row, color) {
 
 accepted_outf <- c(
   "jpg",
-  "jpeg"
+  "jpeg",
+  "pdf",
+  "png"
 )
 
 check_arg_outf <- function(outf) {
   if(!is.null(outf)) {
-    file_ext_match <- function(x) {
-      grepl(x, tools::file_ext(outf), fixed=TRUE)
-    }
-    if(!any(unlist(lapply(accepted_outf, file_ext_match)))) {
+    if(!any(tools::file_ext(outf) %in% accepted_outf)) {
       stop(paste("file extension must be in (", paste(accepted_outf, collapse=", "), ") not", tools::file_ext(outf)))
     }
   }
@@ -41,6 +40,18 @@ check_arg_outf <- function(outf) {
 }
 
 print_object <- function(a.gt, outf) {
+  outfx <- tools::file_ext(outf)
+  if (outfx %in% c("jpg", "jpeg")) {
+    grDevices::jpeg(outf)
+  } else if (outfx == "png") {
+    grDevices::png(outf)
+  } else if (outfx == "pdf") {
+    grDevices::pdf(outf)
+  } else {
+    stop(paste("file extension", outfx, "not supported."))
+  }
+  gridExtra::grid.arrange(a.gt)
+  grDevices::dev.off()
   NULL
 }
 
