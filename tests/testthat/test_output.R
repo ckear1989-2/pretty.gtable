@@ -19,3 +19,10 @@ test_that("output files have been created", {
     expect_true(file.exists(paste0("mtcars.", ext)))
   }
 })
+
+test_that("truncation works (with warnings)", {
+  expect_silent(pretty_gtable(mtcars, NULL, "mtcars_16.pdf", truncate=1:16))
+  expect_silent(pretty_gtable(mtcars, NULL, "mtcars_mazda.pdf", truncate=c("Mazda RX4", "Mazda RX4 Wag")))
+  expect_warning(pretty_gtable(mtcars, NULL, "mtcars_fakecar.pdf", truncate=c("fakecar1", "fakecar2")), "attempting to truncate data with incompatible indexing")
+  expect_warning(pretty_gtable(mtcars, NULL, "mtcars_1000.pdf", truncate=1:1000), "attempting to truncate data with incompatible indexing")
+})

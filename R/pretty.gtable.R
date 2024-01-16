@@ -56,12 +56,34 @@ print_object <- function(a.gt, outf) {
 }
 
 #' @export
-pretty_gtable <- function(data, options=NULL, outf=NULL) {
+pretty_gtable <- function(data, options=NULL, outf=NULL, truncate=NULL) {
   check_arg_outf(outf)
   if (!("data.frame" %in% class(data)) & !("data.table" %in% class(data))) {
     stop(paste("provided data should be data.frame or data.table not", class(data)))
   }
-  a.gt <- gridExtra::tableGrob(data, theme=table.theme(16), rows=NULL)
+  datac <- data.frame(data)
+  if (!is.null(truncate)) {
+    tryCatch(
+      {
+        if (nrow(datac) < length(truncate)) {
+          warning("attempting to truncate data with incompatible indexing")
+        } else if (is.character(truncate)) {
+            if (!all(truncate %in% rownames(datac))) {
+              warning("attempting to truncate data with incompatible indexing")
+            } else {
+              datac <- datac[truncate, ]
+            }
+        } else {
+          datac <- datac[truncate, ]
+        }
+      }, error= function(cond) {
+        warning("attempting to truncate data with incompatible indexing")
+        message("Here's the original error message:")
+        message(conditionMessage(cond))
+        datac
+      })
+  }
+  a.gt <- gridExtra::tableGrob(datac, theme=table.theme(16), rows=NULL)
   for(row in options$rows) {
     set.row.border(a.gt, options$rows$row)
   }
