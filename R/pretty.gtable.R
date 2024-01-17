@@ -1,5 +1,6 @@
 padding <- function() grid::unit.c(grid::unit(2, "mm"), grid::unit(2, "mm"))
 
+#' @import gridExtra
 table.theme <- function(fs) {
   gridExtra::ttheme_default(
     core = list(
@@ -17,6 +18,12 @@ table.theme <- function(fs) {
   )
 }
 
+find_cell <- function(table, row, col, name = "core-fg") {
+  l <- table$layout
+  which(l$t == row & l$l == col & l$name == name)
+}
+
+#' @import gtable
 set.row.border <- function(obj, row, color) {
   # row + 1 because of header
   gtable::gtable_add_grob(obj, grobs = grid::rectGrob(gp = grid::gpar(fill = color, lwd = 2, col = color, alpha = 0.5)), t = (row + 1.02), b = (row + 1.98), l = 1.02, r = (ncol(obj) + 1))
@@ -54,6 +61,65 @@ print_object <- function(a.gt, outf) {
   NULL
 }
 
+#' @importFrom grid gpar
+colorise.tableGrob <- function(obj, dt, col1, col2, fs = 12) {
+  # set all font sizes
+  for (x in 1:(ncol(dt) + 1)) {
+    for (y in 1:(nrow(dt) + 1)) {
+      for (fg in c("colhead-fg", "rowhead-fg", "core-fg")) {
+        ind <- find_cell(obj, y, x, fg)
+        if (!length(ind) > 0) {
+          next
+        } else {
+          obj$grobs[ind][[1]][["gp"]] <- grid::gpar(fontsize = fs, just = "left")
+        }
+      }
+    }
+  }
+  # bold first row
+  for (x in 1:(ncol(dt) + 1)) {
+    for (fg in c("core-fg", "colhead-fg")) {
+      ind <- find_cell(obj, 1, x, fg)
+      if (!length(ind) > 0) {
+        next
+      } else {
+        obj$grobs[ind][[1]][["gp"]] <- grid::gpar(fontsize = fs, fontface = "bold", just = "left")
+      }
+    }
+  }
+  # bold first column
+  for (x in 1:(nrow(dt) + 1)) {
+    for (fg in c("core-fg", "rowhead-fg")) {
+      ind <- find_cell(obj, x, 1, fg)
+      if (!length(ind) > 0) {
+        next
+      } else {
+        obj$grobs[ind][[1]][["gp"]] <- grid::gpar(fontsize = fs, fontface = "bold", just = "left")
+      }
+    }
+  }
+  # alternate colors
+  for (x in 1:(ncol(dt) + 1)) {
+    for (y in 1:(nrow(dt) + 1)) {
+      for (bg in c("colhead-bg", "rowhead-bg", "core-bg")) {
+        ind <- find_cell(obj, y, x, bg)
+        if (!length(ind) > 0) {
+          next
+        } else {
+          if ((y %% 2) == 0) {
+            fill <- col1
+          } else {
+            fill <- col2
+          }
+          obj$grobs[ind][[1]][["gp"]] <- grid::gpar(fill = fill, col = "white", just = "left")
+        }
+      }
+    }
+  }
+  obj
+}
+
+
 #' @export
 pretty_gtable <- function(data, options = NULL, outf = NULL, truncate = NULL) {
   check_arg_outf(outf)
@@ -85,6 +151,10 @@ pretty_gtable <- function(data, options = NULL, outf = NULL, truncate = NULL) {
     )
   }
   a.gt <- gridExtra::tableGrob(datac, theme = table.theme(16), rows = NULL)
+  a.gt <- colorise.tableGrob(a.gt, datac, "grey90", "grey95", 16)
+  for (i in 0:nrow(datac)) {
+    a.gt <- set.row.border(a.gt, i, "black")
+  }
   for (row in options$rows) {
     set.row.border(a.gt, options$rows$row)
   }
