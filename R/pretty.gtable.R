@@ -139,6 +139,27 @@ colorise.tableGrob <- function(obj, dt, col1, col2, fs = 12) {
   obj
 }
 
+colorise.tableGrob.cols <- function(obj, dt, col1, col2) {
+  # alternate colors
+  for (x in 1:(ncol(dt) + 1)) {
+    for (y in 1:(nrow(dt) + 1)) {
+      for (bg in c("colhead-bg", "rowhead-bg", "core-bg")) {
+        ind <- find_cell(obj, y, x, bg)
+        if (!length(ind) > 0) {
+          next
+        } else {
+          if ((x %% 2) == 0) {
+            fill <- col1
+          } else {
+            fill <- col2
+          }
+          obj$grobs[ind][[1]][["gp"]] <- grid::gpar(fill = fill, col = "white", just = "left")
+        }
+      }
+    }
+  }
+  obj
+}
 
 #' @export
 pretty_gtable <- function(data, options = NULL, outf = NULL, truncate = NULL) {
@@ -178,14 +199,14 @@ pretty_gtable <- function(data, options = NULL, outf = NULL, truncate = NULL) {
   } else {
     a.gt <- gridExtra::tableGrob(datac, theme = table.theme(16), rows = options$rows, cols = options$cols)
   }
-  # a.gt <- colorise.tableGrob(a.gt, datac, "grey90", "grey95", 16)
-  # for (i in 0:nrow(datac)) {
-  #   a.gt <- set.row.border(a.gt, i, "black")
-  # }
   if (!is.null(options$rowcs)) {
-    # set.row.border(a.gt, options$rows$row)
     if (length(options$rowcs) == 2) {
       a.gt <- colorise.tableGrob(a.gt, datac, options$rowcs[1], options$rowcs[2], options$fs)
+    }
+  }
+  if (!is.null(options$colcs)) {
+    if (length(options$colcs) == 2) {
+      a.gt <- colorise.tableGrob.cols(a.gt, datac, options$colcs[1], options$colcs[2])
     }
   }
   if (!is.null(outf)) {

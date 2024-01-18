@@ -1,11 +1,10 @@
-library("data.table")
-
 test_that("data.frame works", {
   expect_silent(pretty_gtable(mtcars, NULL))
 })
 
 
 test_that("data.table works", {
+  library("data.table")
   expect_silent(pretty_gtable(data.table(mtcars), NULL))
 })
 
