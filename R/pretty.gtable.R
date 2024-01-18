@@ -45,14 +45,34 @@ check_arg_outf <- function(outf) {
   NULL
 }
 
-print_object <- function(a.gt, outf) {
+print_object <- function(a.gt, options, outf) {
   outfx <- tools::file_ext(outf)
+  if (is.null(options$width)) {
+    width <- 480
+  } else {
+    width <- options$width
+  }
+  if (is.null(options$height)) {
+    height <- 480
+  } else {
+    height <- options$height
+  }
   if (outfx %in% c("jpg", "jpeg")) {
-    grDevices::jpeg(outf)
+    grDevices::jpeg(outf, width = width, height = height)
   } else if (outfx == "png") {
-    grDevices::png(outf)
+    grDevices::png(outf, width = width, height = height)
   } else if (outfx == "pdf") {
-    grDevices::pdf(outf)
+    if (is.null(options$width)) {
+      width <- 7
+    } else {
+      width <- options$width
+    }
+    if (is.null(options$height)) {
+      height <- 7
+    } else {
+      height <- options$height
+    }
+    grDevices::pdf(outf, width = width, height = height)
   } else {
     stop(paste("file extension", outfx, "not supported."))
   }
@@ -137,9 +157,12 @@ pretty_gtable <- function(data, options = NULL, outf = NULL, truncate = NULL) {
             warning("attempting to truncate data with incompatible indexing")
           } else {
             datac <- datac[truncate, ]
+            row_truncate <- (which(rownames(datac) == truncate))
+            options$rows <- options$rows[row_truncate]
           }
         } else {
           datac <- datac[truncate, ]
+          options$rows <- options$rows[truncate]
         }
       },
       error = function(cond) {
@@ -150,16 +173,23 @@ pretty_gtable <- function(data, options = NULL, outf = NULL, truncate = NULL) {
       }
     )
   }
-  a.gt <- gridExtra::tableGrob(datac, theme = table.theme(16), rows = NULL)
-  a.gt <- colorise.tableGrob(a.gt, datac, "grey90", "grey95", 16)
-  for (i in 0:nrow(datac)) {
-    a.gt <- set.row.border(a.gt, i, "black")
+  if (!is.null(options$fs)) {
+    a.gt <- gridExtra::tableGrob(datac, theme = table.theme(options$fs), rows = options$rows, cols = options$cols)
+  } else {
+    a.gt <- gridExtra::tableGrob(datac, theme = table.theme(16), rows = options$rows, cols = options$cols)
   }
-  for (row in options$rows) {
-    set.row.border(a.gt, options$rows$row)
+  # a.gt <- colorise.tableGrob(a.gt, datac, "grey90", "grey95", 16)
+  # for (i in 0:nrow(datac)) {
+  #   a.gt <- set.row.border(a.gt, i, "black")
+  # }
+  if (!is.null(options$rowcs)) {
+    # set.row.border(a.gt, options$rows$row)
+    if (length(options$rowcs) == 2) {
+      a.gt <- colorise.tableGrob(a.gt, datac, options$rowcs[1], options$rowcs[2], options$fs)
+    }
   }
   if (!is.null(outf)) {
-    print_object(a.gt, outf)
+    print_object(a.gt, options, outf)
   }
   a.gt
 }

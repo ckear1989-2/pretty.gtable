@@ -15,13 +15,32 @@ test_that("other output fails", {
 
 test_that("output files have been created", {
   for (ext in c("jpg", "jpeg", "pdf", "png")) {
-    expect_true(file.exists(paste0("mtcars.", ext)))
+    outf <- paste0("mtcars.", ext)
+    expect_true(file.exists(outf))
+    expect(difftime(Sys.time(), file.info(outf)$mtime, units = "secs") < 20, paste(outf, "not created in last 20 seconds."))
   }
 })
 
 test_that("truncation works (with warnings)", {
-  expect_silent(pretty_gtable(mtcars, NULL, "mtcars_16.pdf", truncate = 1:16))
-  expect_silent(pretty_gtable(mtcars, NULL, "mtcars_mazda.pdf", truncate = c("Mazda RX4", "Mazda RX4 Wag")))
-  expect_warning(pretty_gtable(mtcars, NULL, "mtcars_fakecar.pdf", truncate = c("fakecar1", "fakecar2")), "attempting to truncate data with incompatible indexing")
-  expect_warning(pretty_gtable(mtcars, NULL, "mtcars_1000.pdf", truncate = 1:1000), "attempting to truncate data with incompatible indexing")
+  table.options <- list(
+    rows = rownames(mtcars),
+    cols = colnames(mtcars),
+    width = 9,
+    height = 4
+  )
+  expect_silent(pretty_gtable(mtcars, table.options, "mtcars_16.pdf", truncate = 1:16))
+  expect_silent(pretty_gtable(mtcars, table.options, "mtcars_mazda.pdf", truncate = c("Mazda RX4", "Mazda RX4 Wag")))
+  expect_warning(pretty_gtable(mtcars, table.options, "mtcars_fakecar.pdf", truncate = c("fakecar1", "fakecar2")), "attempting to truncate data with incompatible indexing")
+  expect_warning(pretty_gtable(mtcars, table.options, "mtcars_1000.pdf", truncate = 1:1000), "attempting to truncate data with incompatible indexing")
+})
+
+test_that("colorisation works", {
+  table.options <- list(
+    rows = rownames(mtcars),
+    cols = colnames(mtcars),
+    width = 9,
+    height = 4,
+    rowcs = c("red1", "red3")
+  )
+  expect_silent(pretty_gtable(mtcars, table.options, "mtcars_16_color.pdf", truncate = 1:16))
 })
