@@ -209,6 +209,12 @@ pretty_gtable <- function(data, options = NULL, outf = NULL, truncate = NULL) {
       a.gt <- colorise.tableGrob.cols(a.gt, datac, options$colcs[1], options$colcs[2])
     }
   }
+  if (!is.null(options$bg_fill) & !is.null(options$bg_color) & !is.null(options$bg_alpha) & !is.null(options$bg_linewidth)) {
+    a.gt <- grid::grobTree(
+      grid::rectGrob(gp = grid::gpar(fill = options$bg_fill, lwd = options$bg_linewidth, col = options$bg_color, alpha = options$bg_alpha)),
+      a.gt
+    )
+  }
   if (!is.null(outf)) {
     print_object(a.gt, options, outf)
   }
