@@ -82,7 +82,9 @@ print_object <- function(a.gt, options, outf) {
 }
 
 #' @importFrom grid gpar
-colorise.tableGrob <- function(obj, dt, col1, col2, fs = 12) {
+colorise.tableGrob <- function(obj, dt, cols, fs = 12) {
+  # make sure there is a color for every row
+  cols <- rep(cols, nrow(dt))[1:(nrow(dt) + 1)]
   # set all font sizes
   for (x in 1:(ncol(dt) + 1)) {
     for (y in 1:(nrow(dt) + 1)) {
@@ -126,13 +128,9 @@ colorise.tableGrob <- function(obj, dt, col1, col2, fs = 12) {
         if (!length(ind) > 0) {
           next
         } else {
-          if ((y %% 2) == 0) {
-            fill <- col1
-          } else {
-            fill <- col2
-          }
-          obj$grobs[ind][[1]][["gp"]] <- grid::gpar(fill = fill, col = "white", just = "left")
+          fill <- cols[y]
         }
+        obj$grobs[ind][[1]][["gp"]] <- grid::gpar(fill = fill, col = "white", just = "left")
       }
     }
   }
@@ -201,7 +199,7 @@ pretty_gtable <- function(data, options = NULL, outf = NULL, truncate = NULL) {
   }
   if (!is.null(options$rowcs)) {
     if (length(options$rowcs) == 2) {
-      a.gt <- colorise.tableGrob(a.gt, datac, options$rowcs[1], options$rowcs[2], options$fs)
+      a.gt <- colorise.tableGrob(a.gt, datac, options$rowcs, options$fs)
     }
   }
   if (!is.null(options$colcs)) {
