@@ -198,9 +198,7 @@ pretty_gtable <- function(data, options = NULL, outf = NULL, truncate = NULL) {
     a.gt <- gridExtra::tableGrob(datac, theme = table.theme(16), rows = options$rows, cols = options$cols)
   }
   if (!is.null(options$rowcs)) {
-    if (length(options$rowcs) == 2) {
-      a.gt <- colorise.tableGrob(a.gt, datac, options$rowcs, options$fs)
-    }
+    a.gt <- colorise.tableGrob(a.gt, datac, options$rowcs, options$fs)
   }
   if (!is.null(options$colcs)) {
     if (length(options$colcs) == 2) {
