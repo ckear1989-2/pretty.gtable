@@ -209,11 +209,21 @@ pretty_gtable <- function(data, options = NULL, outf = NULL, truncate = NULL) {
       a.gt <- colorise.tableGrob.cols(a.gt, datac, options$colcs[1], options$colcs[2])
     }
   }
-  if (!is.null(options$bg_fill) & !is.null(options$bg_color) & !is.null(options$bg_alpha) & !is.null(options$bg_linewidth)) {
+  all_bg_options <- (!is.null(options$bg_fill) & !is.null(options$bg_color) & !is.null(options$bg_alpha) & !is.null(options$bg_linewidth))
+  if (all_bg_options) {
     a.gt <- grid::grobTree(
       grid::rectGrob(gp = grid::gpar(fill = options$bg_fill, lwd = options$bg_linewidth, col = options$bg_color, alpha = options$bg_alpha)),
       a.gt
     )
+  }
+  if (!is.null(options$title)) {
+    title.p.obj <- grid::textGrob(
+      label = options$title,
+      gp = grid::gpar(fontsize = options$fs, fontface = "bold", fill = "black", col = "black", alpha = 1),
+      x = 0.5,
+      y = 0.92,
+    )
+    a.gt <- grid::grobTree(title.p.obj, a.gt)
   }
   if (!is.null(outf)) {
     print_object(a.gt, options, outf)
