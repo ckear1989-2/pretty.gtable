@@ -1,18 +1,21 @@
 padding <- function() grid::unit.c(grid::unit(2, "mm"), grid::unit(2, "mm"))
 
 #' @import gridExtra
-table.theme <- function(fs) {
+table.theme <- function(fs, fontfamily = NULL) {
+  if (is.null(fontfamily)) {
+    fontfamily <- "sans"
+  }
   gridExtra::ttheme_default(
     core = list(
-      fg_params = list(fontsize = fs, just = "left"),
+      fg_params = list(fontsize = fs, just = "left", fontfamily = fontfamily),
       padding = padding()
     ),
     rowhead = list(
-      fg_params = list(fontsize = fs, fontface = "bold", just = "left"),
+      fg_params = list(fontsize = fs, fontface = "bold", just = "left", fontfamily = fontfamily),
       padding = padding()
     ),
     colhead = list(
-      fg_params = list(fontsize = fs, fontface = "bold", just = "left"),
+      fg_params = list(fontsize = fs, fontface = "bold", just = "left", fontfamily = fontfamily),
       padding = padding()
     )
   )
@@ -193,9 +196,9 @@ pretty_gtable <- function(data, options = NULL, outf = NULL, truncate = NULL) {
     )
   }
   if (!is.null(options$fs)) {
-    a.gt <- gridExtra::tableGrob(datac, theme = table.theme(options$fs), rows = options$rows, cols = options$cols)
+    a.gt <- gridExtra::tableGrob(datac, theme = table.theme(options$fs, options$fontfamily), rows = options$rows, cols = options$cols)
   } else {
-    a.gt <- gridExtra::tableGrob(datac, theme = table.theme(16), rows = options$rows, cols = options$cols)
+    a.gt <- gridExtra::tableGrob(datac, theme = table.theme(16, options$fontfamily), rows = options$rows, cols = options$cols)
   }
   if (!is.null(options$rowcs)) {
     a.gt <- colorise.tableGrob(a.gt, datac, options$rowcs, options$fs)

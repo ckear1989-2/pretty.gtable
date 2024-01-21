@@ -12,4 +12,5 @@ Rscript -e "testthat::test_file(\"tests/testthat/test_row_color.R\", package=\"p
 Rscript -e "testthat::test_file(\"tests/testthat/test_column_color.R\", package=\"pretty.gtable\")"
 Rscript -e "testthat::test_file(\"tests/testthat/test_background.R\", package=\"pretty.gtable\")"
 Rscript -e "testthat::test_file(\"tests/testthat/test_title.R\", package=\"pretty.gtable\")"
+Rscript -e "testthat::test_file(\"tests/testthat/test_font.R\", package=\"pretty.gtable\")"
 Rscript -e "devtools::test()"
